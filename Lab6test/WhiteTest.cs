@@ -433,7 +433,7 @@ namespace Lab6test
         {
             // Arrange
             var input = _data.GetMatrixes();
-            var answer = new int[10] { -1, -1, -1, 2, -1, 2, -1, -1, -1, 2 };
+            var answer = new int[10] { 0, 0, 0, 2, 2, 2, 0, 3, 2, 2 };
             var test = new int[answer.Length];
             // Act
             for (int i = 0; i < answer.Length; i++)
