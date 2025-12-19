@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace Lab6
@@ -12,6 +13,7 @@ namespace Lab6
         {
 
             // code here
+
             if (A == null || B == null) { A = null; B = null; return; }
             DeleteMaxElement(ref A);
             DeleteMaxElement(ref B);
@@ -23,14 +25,16 @@ namespace Lab6
         {
 
             // code here
-            if (array.Length == 0 || matrix.GetLength(0) != array.Length) return;
-            for (int i = 0; i < array.Length; i++)
+
+            if (matrix == null || array == null) return;
+            int rows = matrix.GetLength(0);
+            int cols = matrix.GetLength(1);
+            if (array.Length != rows) return;
+            for (int i = 0; i < rows; i++)
             {
-                int maxvalue = FindMaxInRow(matrix, i, out int maxcol);
-                if (maxvalue < array[i])
-                {
-                    matrix[i, maxcol] = array[i];
-                }
+                int col;
+                int max = FindMaxInRow(matrix, i, out col);
+                if (max < array[i]) matrix[i, col] = array[i];
             }
             // end
 
@@ -39,9 +43,13 @@ namespace Lab6
         {
 
             // code here
-            int rows = matrix.GetLength(0), cols = matrix.GetLength(1);
-            if (rows != cols) return;
-            FindMax(matrix, out int row, out int col);
+
+            if (matrix == null) return;
+            int n = matrix.GetLength(0);
+            int m = matrix.GetLength(1);
+            if (n != m) return;
+            int row, col;
+            FindMax(matrix, out row, out col);
             SwapColWithDiagonal(matrix, col);
             // end
 
@@ -50,64 +58,68 @@ namespace Lab6
         {
 
             // code here
+
+            if (matrix == null) { matrix = null; return; }
             int rows = matrix.GetLength(0);
-            for (int i = rows - 1; i >= 0; i--)
+            int cols = matrix.GetLength(1);
+            bool[] keep = new bool[rows];
+            int k = 0;
+            for (int i = 0; i < rows; i++)
             {
                 bool hasZero = false;
-                int cols = matrix.GetLength(1);
-                for (int j = 0; j < cols; j++)
-                {
-                    if (matrix[i, j] == 0)
-                    {
-                        hasZero = true;
-                        break;
-                    }
-                }
-                if (hasZero)
-                {
-                    RemoveRow(ref matrix, i);
-                }
+                for (int j = 0; j < cols; j++) { if (matrix[i, j] == 0) { hasZero = true; break; } }
+                keep[i] = !hasZero;
+                if (keep[i]) k++;
             }
+            int[,] res = new int[k, cols];
+            int r = 0;
+            for (int i = 0; i < rows; i++)
+            {
+                if (!keep[i]) continue;
+                for (int j = 0; j < cols; j++) res[r, j] = matrix[i, j];
+                r++;
+            }
+            matrix = res;
             // end
 
         }
-        public int[] Task5(int[,] matrix)
-        {
+@@ -42,7 +83,18 @@ public int[] Task5(int[,] matrix)
             int[] answer = null;
 
             // code here
+
             if (matrix == null) return null;
-            int rows = matrix.GetLength(0);
-            int cols = matrix.GetLength(1);
-            if (rows != cols) return null;
-            int[] rez = new int[n];
+            int n = matrix.GetLength(0);
+            int m = matrix.GetLength(1);
+            if (n != m) return null;
+            int[] res = new int[n];
             for (int i = 0; i < n; i++)
             {
                 int min = matrix[i, i];
                 for (int j = i; j < m; j++) if (matrix[i, j] < min) min = matrix[i, j];
-                rez[i] = min;
+                res[i] = min;
             }
-            answer = rez;
+            answer = res;
             // end
 
             return answer;
-        }
-        public int[] Task6(int[,] A, int[,] B)
-        {
+@@ -52,7 +104,10 @@ public int[] Task6(int[,] A, int[,] B)
             int[] answer = null;
 
             // code here
-            int[] arr1 = SumPositiveElementsInColumns(A);
-            int[] arr2 = SumPositiveElementsInColumns(B);
-            answer = CombineArrays(arr1, arr2);
+
+            if (A == null || B == null) return null;
+            int[] sA = SumPositiveElementsInColumns(A);
+            int[] sB = SumPositiveElementsInColumns(B);
+            answer = CombineArrays(sA, sB);
             // end
 
             return answer;
-        }
-        public void Task7(int[,] matrix, Sorting sort)
+@@ -61,25 +116,47 @@ public void Task7(int[,] matrix, Sorting sort)
         {
 
             // code here
+
             if (matrix == null || sort == null) return;
             int rows = matrix.GetLength(0);
             int cols = matrix.GetLength(1);
@@ -122,9 +134,18 @@ namespace Lab6
 
         }
         public int Task8(double[] A, double[] B)
+        {
+            int answer = 0;
+
+            // code here
+
+            // end
+
+            return answer;
+        }
                     {
                         int answer = 0;
-                    
+
                         // code here
                         if (A == null || B == null || A.Length != 3 || B.Length != 3) return 0;
                         double a1 = GeronArea(A[0], A[1], A[2]);
@@ -132,13 +153,14 @@ namespace Lab6
                         if (a1 == 0 && a2 == 0) return 0;
                         answer = (a1 >= a2) ? 1 : 2;  // tie -> 1
                         // end
-                    
+
                         return answer;
                     }
         public void Task9(int[,] matrix, Action<int[]> sorter)
         {
 
             // code here
+
             if (matrix == null || sorter == null) return;
             int rows = matrix.GetLength(0);
             int cols = matrix.GetLength(1);
@@ -152,11 +174,11 @@ namespace Lab6
             // end
 
         }
-        public double Task10(int[][] array, Func<int[][], double> func)
-        {
+@@ -88,10 +165,219 @@ public double Task10(int[][] array, Func<int[][], double> func)
             double res = 0;
 
             // code here
+
             if (array == null || func == null) return 0;
             res = func(array);
             // end
@@ -186,72 +208,52 @@ namespace Lab6
         }
         public int FindMaxInRow(int[,] matrix, int row, out int col)
         {
+            col = 0;
             int cols = matrix.GetLength(1);
             int max = matrix[row, 0];
-            col = 0;
-            for (int j = 1; j < cols; j++)
-            {
-                if (matrix[row, j] > max)
-                {
-                    max = matrix[row, j];
-                    col = j;
-                }
-            }
+            for (int j = 1; j < cols; j++) if (matrix[row, j] > max) { max = matrix[row, j]; col = j; }
             return max;
         }
         public void FindMax(int[,] matrix, out int row, out int col)
         {
-            int rows = matrix.GetLength(0);
-            int cols = matrix.GetLength(1);
+            row = 0; col = 0;
+            int r = matrix.GetLength(0);
+            int c = matrix.GetLength(1);
             int max = matrix[0, 0];
-            row = -1;
-            col = -1;
-            for (int i = 0; i < rows; i++)
-            {
-                for (int j = 0; j < cols; j++)
+            for (int i = 0; i < r; i++)
+                for (int j = 0; j < c; j++)
                 {
-                    if (matrix[i, j] > max)
-                    {
-                        max = matrix[i, j];
-                        row = i;
-                        col = j;
-                    }
+                    int v = matrix[i, j];
+                    if (v > max) { max = v; row = i; col = j; }
                 }
-            }
         }
         public void SwapColWithDiagonal(int[,] matrix, int col)
         {
-            for (int i = 0; i < matrix.GetLength(0); i++)
+            int n = matrix.GetLength(0);
+            int m = matrix.GetLength(1);
+            if (n != m || col < 0 || col >= m) return;
+            for (int i = 0; i < n; i++)
             {
-                if (i == col) continue;
-                int temp = matrix[i, i];
+                int tmp = matrix[i, i];
                 matrix[i, i] = matrix[i, col];
-                matrix[i, col] = temp;
+                matrix[i, col] = tmp;
             }
         }
         public void RemoveRow(ref int[,] matrix, int row)
         {
-            int rows = matrix.GetLength(0);
-            int cols = matrix.GetLength(1);
-            int[,] newmatrix = new int[rows - 1, cols];
-            for (int i = 0; i < rows - 1; i++)
+            if (matrix == null) { matrix = null; return; }
+            int n = matrix.GetLength(0);
+            int m = matrix.GetLength(1);
+            if (row < 0 || row >= n) return;
+            int[,] res = new int[n - 1, m];
+            int w = 0;
+            for (int i = 0; i < n; i++)
             {
-                if (i < row)
-                {
-                    for (int j = 0; j < cols; j++)
-                    {
-                        newmatrix[i, j] = matrix[i, j];
-                    }
-                }
-                else
-                {
-                    for (int j = 0; j < cols; j++)
-                    {
-                        newmatrix[i, j] = matrix[i + 1, j];
-                    }
-                }
+                if (i == row) continue;
+                for (int j = 0; j < m; j++) res[w, j] = matrix[i, j];
+                w++;
             }
-            matrix = newmatrix;
+            matrix = res;
         }
         public int[] GetRowsMinElements(int[,] matrix)
         {
@@ -272,17 +274,14 @@ namespace Lab6
         {
             int rows = matrix.GetLength(0);
             int cols = matrix.GetLength(1);
-            int[] array = new int[cols];
+            int[] res = new int[cols];
             for (int j = 0; j < cols; j++)
             {
-                int sum = 0;
-                for (int i = 0; i < rows; i++)
-                {
-                    if (matrix[i, j] > 0) sum += matrix[i, j];
-                }
-                array[j] = sum;
+                int s = 0;
+                for (int i = 0; i < rows; i++) if (matrix[i, j] > 0) s += matrix[i, j];
+                res[j] = s;
             }
-            return array;
+            return res;
         }
         public void SortEndAscending(int[] row)
         {
@@ -345,7 +344,7 @@ namespace Lab6
             sorter(tmp);
             for (int j = 0; j < cols; j++) matrix[row, j] = tmp[j];
         }
-         public double CountZeroSum(int[][] array)
+        public double CountZeroSum(int[][] array)
         {
             if (array == null) return 0;
             int cnt = 0;
@@ -392,6 +391,8 @@ namespace Lab6
         }
     }
 }
+
+
 
 
 
