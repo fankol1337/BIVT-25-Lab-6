@@ -39,12 +39,9 @@ namespace Lab6
         {
 
             // code here
-            if (matrix == null) return;
-            int n = matrix.GetLength(0);
-            int m = matrix.GetLength(1);
-            if (n != m) return;
-            int row, col;
-            FindMax(matrix, out row, out col);
+            int rows = matrix.GetLength(0), cols = matrix.GetLength(1);
+            if (rows != cols) return;
+            FindMax(matrix, out int row, out int col);
             SwapColWithDiagonal(matrix, col);
             // end
 
@@ -53,27 +50,24 @@ namespace Lab6
         {
 
             // code here
-            if (matrix == null) { matrix = null; return; }
             int rows = matrix.GetLength(0);
-            int cols = matrix.GetLength(1);
-            bool[] keep = new bool[rows];
-            int k = 0;
-            for (int i = 0; i < rows; i++)
+            for (int i = rows - 1; i >= 0; i--)
             {
                 bool hasZero = false;
-                for (int j = 0; j < cols; j++) { if (matrix[i, j] == 0) { hasZero = true; break; } }
-                keep[i] = !hasZero;
-                if (keep[i]) k++;
+                int cols = matrix.GetLength(1);
+                for (int j = 0; j < cols; j++)
+                {
+                    if (matrix[i, j] == 0)
+                    {
+                        hasZero = true;
+                        break;
+                    }
+                }
+                if (hasZero)
+                {
+                    RemoveRow(ref matrix, i);
+                }
             }
-            int[,] res = new int[k, cols];
-            int r = 0;
-            for (int i = 0; i < rows; i++)
-            {
-                if (!keep[i]) continue;
-                for (int j = 0; j < cols; j++) res[r, j] = matrix[i, j];
-                r++;
-            }
-            matrix = res;
             // end
 
         }
@@ -172,41 +166,23 @@ namespace Lab6
 
         public void DeleteMaxElement(ref int[] array)
         {
+            if (array == null) { array = null; return; }
             if (array.Length == 0) return;
-
-            int max = array[0];
-            int ind = 0;
-            for (int i = 1; i < array.Length; i++)
-            {
-                if (array[i] > max)
-                {
-                    max = array[i];
-                    ind = i;
-                }
-            }
-            int[] newarr = new int[array.Length - 1];
-            for (int i = 0; i < newarr.Length; i++)
-            {
-                if (i < indmax)
-                {
-                    newarr[i] = array[i];
-                }
-                else
-                {
-                    newarr[i] = array[i + 1];
-                }
-            }
-            array = newarr;
+            int max = array[0], idx = 0;
+            for (int i = 1; i < array.Length; i++) if (array[i] > max) { max = array[i]; idx = i; }
+            int[] res = new int[array.Length - 1];
+            int w = 0;
+            for (int i = 0; i < array.Length; i++) if (i != idx) res[w++] = array[i];
+            array = res;
         }
         public int[] CombineArrays(int[] A, int[] B)
         {
-            int[] rez = new int[A.Length + B.Length];
-            for (int i = 0; i < rez.Length; i++)
-            {
-                if (i < A.Length) rez[i] = A[i];
-                else rez[i] = B[i - A.Length];
-            }
-            return rez;
+            if (A == null || B == null) return null;
+            int[] res = new int[A.Length + B.Length];
+            int k = 0;
+            for (int i = 0; i < A.Length; i++) res[k++] = A[i];
+            for (int i = 0; i < B.Length; i++) res[k++] = B[i];
+            return res;
         }
         public int FindMaxInRow(int[,] matrix, int row, out int col)
         {
@@ -225,44 +201,57 @@ namespace Lab6
         }
         public void FindMax(int[,] matrix, out int row, out int col)
         {
-            row = 0; col = 0;
-            int r = matrix.GetLength(0);
-            int c = matrix.GetLength(1);
+            int rows = matrix.GetLength(0);
+            int cols = matrix.GetLength(1);
             int max = matrix[0, 0];
-            for (int i = 0; i < r; i++)
-                for (int j = 0; j < c; j++)
+            row = -1;
+            col = -1;
+            for (int i = 0; i < rows; i++)
+            {
+                for (int j = 0; j < cols; j++)
                 {
-                    int v = matrix[i, j];
-                    if (v > max) { max = v; row = i; col = j; }
+                    if (matrix[i, j] > max)
+                    {
+                        max = matrix[i, j];
+                        row = i;
+                        col = j;
+                    }
                 }
+            }
         }
         public void SwapColWithDiagonal(int[,] matrix, int col)
         {
-            int n = matrix.GetLength(0);
-            int m = matrix.GetLength(1);
-            if (n != m || col < 0 || col >= m) return;
-            for (int i = 0; i < n; i++)
+            for (int i = 0; i < matrix.GetLength(0); i++)
             {
-                int tmp = matrix[i, i];
+                if (i == col) continue;
+                int temp = matrix[i, i];
                 matrix[i, i] = matrix[i, col];
-                matrix[i, col] = tmp;
+                matrix[i, col] = temp;
             }
         }
         public void RemoveRow(ref int[,] matrix, int row)
         {
-            if (matrix == null) { matrix = null; return; }
-            int n = matrix.GetLength(0);
-            int m = matrix.GetLength(1);
-            if (row < 0 || row >= n) return;
-            int[,] res = new int[n - 1, m];
-            int w = 0;
-            for (int i = 0; i < n; i++)
+            int rows = matrix.GetLength(0);
+            int cols = matrix.GetLength(1);
+            int[,] newmatrix = new int[rows - 1, cols];
+            for (int i = 0; i < rows - 1; i++)
             {
-                if (i == row) continue;
-                for (int j = 0; j < m; j++) res[w, j] = matrix[i, j];
-                w++;
+                if (i < row)
+                {
+                    for (int j = 0; j < cols; j++)
+                    {
+                        newmatrix[i, j] = matrix[i, j];
+                    }
+                }
+                else
+                {
+                    for (int j = 0; j < cols; j++)
+                    {
+                        newmatrix[i, j] = matrix[i + 1, j];
+                    }
+                }
             }
-            matrix = res;
+            matrix = newmatrix;
         }
         public int[] GetRowsMinElements(int[,] matrix)
         {
@@ -403,6 +392,7 @@ namespace Lab6
         }
     }
 }
+
 
 
 
